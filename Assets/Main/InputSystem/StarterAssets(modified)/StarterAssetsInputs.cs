@@ -60,6 +60,7 @@ namespace StarterAssets
 		public void OnFire(InputValue value)
         {
 			FireInput(value.isPressed);
+			Debug.Log("FIre");
         }
 #endif
 
