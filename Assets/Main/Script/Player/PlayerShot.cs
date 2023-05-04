@@ -9,6 +9,11 @@ using StarterAssets;
 #endif
 public class PlayerShot : MonoBehaviour
 {
+    [SerializeField]
+    private Camera _camera;
+    [SerializeField]
+    private GameObject _bulletHolePrefab;
+
 #if ENABLE_INPUT_SYSTEM
     private PlayerInput _playerInput;
 #endif
@@ -26,14 +31,21 @@ public class PlayerShot : MonoBehaviour
     }
 
     // Update is called once per frame
-    private void Update()
+    private void FixedUpdate()
     {
         Shoot();
     }
 
     private void Shoot()
     {
-        if(_input.GetFireState)
-            Debug.Log("Fire‚ª‰Ÿ‚³‚ê‚Ü‚µ‚½");
+        if (_input.GetFireState && _camera)
+        {
+            RaycastHit hit;
+            if (Physics.Raycast(_camera.ViewportPointToRay(new Vector2(0.5f, 0.5f)), out hit, 100.0f))
+            {
+                var name = hit.collider.name;
+                Debug.Log(name);
+            }
+        }
     }
 }

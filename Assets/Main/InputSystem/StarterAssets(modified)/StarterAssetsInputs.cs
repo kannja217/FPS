@@ -34,33 +34,76 @@ namespace StarterAssets
 
 #if ENABLE_INPUT_SYSTEM
 
-		public void OnMove(InputValue value)
-		{
-			MoveInput(value.Get<Vector2>());
+        private void Awake()
+        {
+			TryGetComponent(out _playerInput);
+        }
+
+        private void OnEnable()
+        {
+			_playerInput.actions["Move"].performed += OnMove;
+			_playerInput.actions["Move"].canceled += OnMoveStop;
+			_playerInput.actions["Jump"].performed += OnJump;
+			_playerInput.actions["Look"].performed += OnLook;
+			_playerInput.actions["Sprint"].performed += OnSprint;
+			_playerInput.actions["Sprint"].canceled += OnSprintStop;
+			_playerInput.actions["Fire"].performed += OnFire;
+			_playerInput.actions["Fire"].canceled += OnFireStop;
 		}
 
-		public void OnLook(InputValue value)
+        private void OnDisable()
+        {
+			_playerInput.actions["Move"].performed -= OnMove;
+			_playerInput.actions["Move"].canceled -= OnMoveStop;
+			_playerInput.actions["Jump"].started += OnJump;
+			_playerInput.actions["Look"].performed -= OnLook;
+			_playerInput.actions["Sprint"].performed += OnSprint;
+			_playerInput.actions["Sprint"].canceled -= OnSprintStop;
+			_playerInput.actions["Fire"].performed -= OnFire;
+			_playerInput.actions["Fire"].canceled -= OnFireStop;
+		}
+
+        public void OnMove(InputAction.CallbackContext context)
+		{
+			MoveInput(context.ReadValue<Vector2>());
+		}
+
+		public void OnLook(InputAction.CallbackContext context)
 		{
 			if(_cursorInputForLook)
 			{
-				LookInput(value.Get<Vector2>());
+				LookInput(context.ReadValue<Vector2>());
 			}
 		}
 
-		public void OnJump(InputValue value)
+		public void OnJump(InputAction.CallbackContext context)
 		{
-			JumpInput(value.isPressed);
+			JumpInput(context.ReadValueAsButton());
 		}
 
-		public void OnSprint(InputValue value)
+		public void OnSprint(InputAction.CallbackContext context)
 		{
-			SprintInput(value.isPressed);
+			SprintInput(context.ReadValueAsButton());
 		}
 
-		public void OnFire(InputValue value)
+		public void OnFire(InputAction.CallbackContext context)
         {
-			FireInput(value.isPressed);
-			Debug.Log("FIre");
+			FireInput(context.ReadValueAsButton());
+        }
+
+		public void OnMoveStop(InputAction.CallbackContext context)
+		{
+			_move = Vector2.zero;
+		}
+
+		public void OnSprintStop(InputAction.CallbackContext context)
+        {
+			_sprint = false;
+        }
+
+		public void OnFireStop(InputAction.CallbackContext context)
+        {
+			_fire = false;
         }
 #endif
 
